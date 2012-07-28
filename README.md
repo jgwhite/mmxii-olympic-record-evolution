@@ -6,5 +6,5 @@ Mapping historical records against GDP per country.
 Contributors
 ------------
 
-* Andrew Macias (http://britmex.com/)
+* Andrew Macias (https://github.com/aamd)
 * Jamie White (http://github.com/jgwhite)
