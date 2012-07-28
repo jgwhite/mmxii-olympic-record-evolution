@@ -1,0 +1,6 @@
+development:
+  sessions:
+    default:
+      database: mmxii
+      hosts:
+        - localhost:27017
