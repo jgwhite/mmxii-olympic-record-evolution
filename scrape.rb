@@ -16,7 +16,7 @@ index.css('.pt10')[1].css('a').each do |link|
     cells = row.css 'td'
     data = {
       year: page.at_css('.nme b').content[/\d+/].to_i,
-      country: cells[0].at_css('a').content,
+      country: cells[0].at_css('a')['href'].match(/cty=([A-Z]+)/)[1],
       gold: cells[1].content,
       silver: cells[2].content,
       bronze: cells[3].content,
@@ -27,4 +27,4 @@ index.css('.pt10')[1].css('a').each do |link|
   end
 end
 
-File.open('olympic-results.json', 'w') { |f| f << data_sets.to_json }
+File.open('sources/olympic-results.json', 'w') { |f| f << data_sets.to_json }

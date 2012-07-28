@@ -13,10 +13,10 @@
     fill: none;
     stroke-width: 1.5;
   }
-  .line.gdp {
+  .line path.gdp {
     stroke: blue;
   }
-  .line.medals {
+  .line path.medals {
     stroke: red;
   }
   .axis {}
@@ -35,12 +35,32 @@
     .axis text {
       font-size: 11px;
     }
+
+    .legend {
+      position: fixed;
+      top: 50px;
+      right: 50px;
+      bottom: 50px;
+      width: 400px;
+    }
+      .legend .country {
+        display: block;
+        float: left;
+        width: 50px;
+        box-sizing: border-box;
+        cursor: pointer;
+        font-size: 11px;
+        padding: 3px 5px;
+      }
+      .legend .country:hover {
+        background: #ccc;
+        color: white;
+      }
 </style>
 
 <div id="graph"></div>
 
 <script src="d3.v2.min.js"></script>
-<script src="rickshaw.min.js"></script>
 
 <script>
 
@@ -48,30 +68,32 @@ window.mmxii = {};
 
 d3.json('data.json', function(dataset) {
   var fullWidth = 900,
-      fullHeight = 600,
+      fullHeight = 760,
       padding = 50,
       width = fullWidth - (padding * 2),
       height = fullHeight - (padding * 2)
 
-  var nest = d3.nest()
-      .key(function(d) { return d.country_code })
-      .sortValues(function(a, b) { return d3.ascending(a.year, b.year) })
-      .map(dataset)
-
-  var usa = nest['USA'].map(function(d) {
-    return {
-      year: new Date(d.year, 0, 1),
-      gdp: d.gdp_per_capita,
-      medals: d.gold_medals + d.silver_medals + d.bronze_medals
-    };
+  dataset.forEach(function(d) {
+    d.year = new Date(d.year, 0, 1)
+    if (d.gdp_per_capita == null) d.gdp_per_capita = 0
+    return d
   })
-  .filter(function(d) { return d.gdp !== null })
 
-  mmxii.usa = usa
+  var gdpExtent = [0, d3.max(dataset, function(d) { return d.gdp_per_capita })],
+      yearExtent = d3.extent(dataset, function(d) { return d.year }),
+      medalExtent = d3.extent(dataset, function(d) { return d.total_medals })
 
-  var e = d3.select('#graph')
+  var nest = d3.nest()
+      .key(function(d) { return d.country })
+      .sortKeys(function(a, b) { return d3.ascending(a, b) })
+      .sortValues(function(a, b) { return d3.ascending(a.year, b.year) })
+      .entries(dataset)
 
-  var svg = e.append('svg')
+  mmxii.nest = nest
+
+  var container = d3.select('#graph')
+
+  var svg = container.append('svg')
       .attr('width', fullWidth)
       .attr('height', fullHeight)
   var graph = svg.append('g')
@@ -79,24 +101,24 @@ d3.json('data.json', function(dataset) {
       .attr('transform', 'translate(' + padding + ', ' + padding + ')')
 
   var xScale = d3.time.scale()
-      .domain(d3.extent(usa, function(d) { return d.year }))
+      .domain(yearExtent)
       .range([0, width])
 
   var gdpScale = d3.scale.linear()
-      .domain([0, d3.max(usa, function(d) { return d.gdp })])
+      .domain(gdpExtent)
       .range([0, height])
 
   var medalScale = d3.scale.linear()
-      .domain([0, d3.max(usa, function(d) { return d.medals })])
+      .domain(medalExtent)
       .range([0, height])
 
   var gdpLine = d3.svg.line()
       .x(function(d) { return xScale(d.year) })
-      .y(function(d) { return height - gdpScale(d.gdp) })
+      .y(function(d) { return height - gdpScale(d.gdp_per_capita) })
 
   var medalLine = d3.svg.line()
       .x(function(d) { return xScale(d.year) })
-      .y(function(d) { return height - medalScale(d.medals) })
+      .y(function(d) { return height - medalScale(d.total_medals) })
 
   var xAxis = d3.svg.axis()
       .scale(xScale)
@@ -105,19 +127,38 @@ d3.json('data.json', function(dataset) {
       .tickSize(6, 3, 0)
 
   graph.append('g')
-      .attr('class', 'line gdp')
-    .append('path')
-      .attr('d', function(d) { return gdpLine(usa) })
-
-  graph.append('g')
-      .attr('class', 'line medals')
-    .append('path')
-      .attr('d', function(d) { return medalLine(usa) })
-
-  graph.append('g')
       .attr('class', 'axis x')
       .attr('transform', 'translate(0,' + height + ')')
       .call(xAxis)
+
+  var lines = graph.selectAll('.line')
+      .data(nest)
+    .enter()
+    .append('g')
+      .attr('visibility', 'hidden')
+      .attr('class', function(d) { return ['line', d.key].join(' ') })
+
+  lines.append('path')
+      .attr('class', 'gdp')
+      .attr('d', function(d) { return gdpLine(d.values) })
+
+  lines.append('path')
+      .attr('class', 'medals')
+      .attr('d', function(d) { return medalLine(d.values) })
+
+  container.append('div')
+      .attr('class', 'legend')
+    .selectAll('.country')
+      .data(nest)
+    .enter()
+    .append('div')
+      .attr('class', 'country')
+      .text(function(d) { return d.key })
+      .on('mouseover', function(d) {
+        d3.selectAll('.line').style('visibility', 'hidden')
+        d3.selectAll('.line.' + d.key).style('visibility', 'visible')
+      })
+
 
 })
 
