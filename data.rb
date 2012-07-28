@@ -16,7 +16,7 @@ class DataSet
 
 end
 
-olympic_results = JSON.parse File.read 'olympic-results.json'
+olympic_results = JSON.parse File.read 'sources/olympic-results.json'
 olympic_results.each do |entry|
   year = entry['year']
   entry['countries'].each do |country|
@@ -32,7 +32,7 @@ olympic_results.each do |entry|
   end
 end
 
-CSV.open('gdp-per-capita.csv', 'r') do |csv|
+CSV.open('sources/gdp-per-capita.csv', 'r') do |csv|
   csv.each do |row|
     country_code = row[2]
     DataSet.where(country_code: country_code).each do |data_set|

@@ -4,5 +4,124 @@
   <title>Olympic Record Evolution</title>
 </head>
 <body>
+
+<style>
+  body {
+    font-family: Helvetica, Arials, sans-serif;
+  }
+  .line {
+    fill: none;
+    stroke-width: 1.5;
+  }
+  .line.gdp {
+    stroke: blue;
+  }
+  .line.medals {
+    stroke: red;
+  }
+  .axis {}
+    .axis .domain {
+      fill: none;
+      stroke: black;
+      stroke-width: 1;
+      shape-rendering: crispEdges;
+    }
+    .axis .tick {
+      fill: none;
+      stroke: black;
+      stroke-width: 1;
+      shape-rendering: crispEdges;
+    }
+    .axis text {
+      font-size: 11px;
+    }
+</style>
+
+<div id="graph"></div>
+
+<script src="d3.v2.min.js"></script>
+<script src="rickshaw.min.js"></script>
+
+<script>
+
+window.mmxii = {};
+
+d3.json('data.json', function(dataset) {
+  var fullWidth = 900,
+      fullHeight = 600,
+      padding = 50,
+      width = fullWidth - (padding * 2),
+      height = fullHeight - (padding * 2)
+
+  var nest = d3.nest()
+      .key(function(d) { return d.country_code })
+      .sortValues(function(a, b) { return d3.ascending(a.year, b.year) })
+      .map(dataset)
+
+  var usa = nest['USA'].map(function(d) {
+    return {
+      year: new Date(d.year, 0, 1),
+      gdp: d.gdp_per_capita,
+      medals: d.gold_medals + d.silver_medals + d.bronze_medals
+    };
+  })
+  .filter(function(d) { return d.gdp !== null })
+
+  mmxii.usa = usa
+
+  var e = d3.select('#graph')
+
+  var svg = e.append('svg')
+      .attr('width', fullWidth)
+      .attr('height', fullHeight)
+  var graph = svg.append('g')
+      .attr('class', 'graph')
+      .attr('transform', 'translate(' + padding + ', ' + padding + ')')
+
+  var xScale = d3.time.scale()
+      .domain(d3.extent(usa, function(d) { return d.year }))
+      .range([0, width])
+
+  var gdpScale = d3.scale.linear()
+      .domain([0, d3.max(usa, function(d) { return d.gdp })])
+      .range([0, height])
+
+  var medalScale = d3.scale.linear()
+      .domain([0, d3.max(usa, function(d) { return d.medals })])
+      .range([0, height])
+
+  var gdpLine = d3.svg.line()
+      .x(function(d) { return xScale(d.year) })
+      .y(function(d) { return height - gdpScale(d.gdp) })
+
+  var medalLine = d3.svg.line()
+      .x(function(d) { return xScale(d.year) })
+      .y(function(d) { return height - medalScale(d.medals) })
+
+  var xAxis = d3.svg.axis()
+      .scale(xScale)
+      .orient('bottom')
+      .ticks(d3.time.years, 4)
+      .tickSize(6, 3, 0)
+
+  graph.append('g')
+      .attr('class', 'line gdp')
+    .append('path')
+      .attr('d', function(d) { return gdpLine(usa) })
+
+  graph.append('g')
+      .attr('class', 'line medals')
+    .append('path')
+      .attr('d', function(d) { return medalLine(usa) })
+
+  graph.append('g')
+      .attr('class', 'axis x')
+      .attr('transform', 'translate(0,' + height + ')')
+      .call(xAxis)
+
+})
+
+</script>
+
 </body>
 </html>
