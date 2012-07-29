@@ -9,15 +9,22 @@
   body {
     font-family: Helvetica, Arials, sans-serif;
   }
+
+  #graph {
+    position: relative;
+  }
+
   .line {
     fill: none;
-    stroke-width: 1.5;
+    stroke-width: 1;
   }
   .line path.gdp {
     stroke: blue;
+    fill: rgba(0, 0, 255, 0.25);
   }
   .line path.medals {
     stroke: red;
+    fill: rgba(255, 0, 0, 0.25);
   }
   .axis {}
     .axis .domain {
@@ -33,7 +40,7 @@
       shape-rendering: crispEdges;
     }
     .axis text {
-      font-size: 11px;
+      font-size: 12px;
     }
 
     .legend {
@@ -56,6 +63,14 @@
         background: #ccc;
         color: white;
       }
+
+  .title {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 900px;
+    text-align: center;
+  }
 </style>
 
 <div id="graph"></div>
@@ -116,13 +131,15 @@ d3.json('data.json', function(dataset) {
       .domain(medalExtent)
       .range([0, height])
 
-  var gdpLine = d3.svg.line()
+  var gdpLine = d3.svg.area()
       .x(function(d) { return xScale(d.year) })
-      .y(function(d) { return height - gdpScale(d.gdp_per_capita) })
+      .y0(function(d) { return height - gdpScale(d.gdp_per_capita) })
+      .y1(function(d) { return height })
 
-  var medalLine = d3.svg.line()
+  var medalLine = d3.svg.area()
       .x(function(d) { return xScale(d.year) })
-      .y(function(d) { return height - medalScale(d.total_medals) })
+      .y0(function(d) { return height - medalScale(d.total_medals) })
+      .y1(function(d) { return height })
 
   var xAxis = d3.svg.axis()
       .scale(xScale)
@@ -157,11 +174,17 @@ d3.json('data.json', function(dataset) {
     .enter()
     .append('div')
       .attr('class', 'country')
+      .attr('title', function(d) { return d.country_name })
       .text(function(d) { return d.key })
       .on('mouseover', function(d) {
         d3.selectAll('.line').style('visibility', 'hidden')
         d3.selectAll('.line.' + d.key).style('visibility', 'visible')
+        d3.select('#title').text(d.country_name)
       })
+
+  container.append('h1')
+      .attr('class', 'title')
+      .attr('id', 'title')
 
 
 })
