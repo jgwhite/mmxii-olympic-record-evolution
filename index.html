@@ -84,10 +84,14 @@ d3.json('data.json', function(dataset) {
       medalExtent = d3.extent(dataset, function(d) { return d.total_medals })
 
   var nest = d3.nest()
-      .key(function(d) { return d.country })
+      .key(function(d) { return d.country_code })
       .sortKeys(function(a, b) { return d3.ascending(a, b) })
       .sortValues(function(a, b) { return d3.ascending(a.year, b.year) })
       .entries(dataset)
+
+  nest.forEach(function(d) {
+    d.country_name = d.values[0].country_name
+  })
 
   mmxii.nest = nest
 
