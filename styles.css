@@ -1,0 +1,165 @@
+body {
+  font-family: Helvetica, Arials, sans-serif;
+  margin: 0;
+  min-width: 1400px;
+}
+
+#graph {
+  position: relative;
+  width: 850px;
+  height: 760px;
+  left: 50px;
+}
+
+a {
+  color: blue;
+}
+
+.line {
+  fill: none;
+  stroke-width: 1;
+}
+.line path.gdp {
+  stroke: blue;
+  fill: rgba(0, 0, 255, 0.25);
+}
+.line path.medals {
+  stroke: red;
+  fill: rgba(255, 0, 0, 0.25);
+}
+.axis {}
+  .axis .domain {
+    fill: none;
+    stroke-width: 1;
+    shape-rendering: crispEdges;
+    stroke: black;
+  }
+  .axis .tick {
+    fill: none;
+    stroke-width: 1;
+    shape-rendering: crispEdges;
+    stroke: black;
+  }
+  .axis text {
+    font-size: 12px;
+  }
+
+  .axis.gdp text {
+    fill: blue;
+  }
+  .axis.gdp .domain,
+  .axis.gdp .tick {
+    stroke: blue;
+  }
+  .axis.medals text {
+    fill: red;
+  }
+  .axis.medals .domain,
+  .axis.medals .tick {
+    stroke: red;
+  }
+
+.axis-label {
+  position: absolute;
+  top: 42%;
+  font-size: 15px;
+}
+.axis-label.gdp {
+  -webkit-transform: rotateZ(-90deg);
+  left: -100px;
+  color: blue;
+}
+.axis-label.medals {
+  -webkit-transform: rotateZ(90deg);
+  right: -30px;
+  color: red;
+}
+
+  .legend {
+    position: absolute;
+    top: 50px;
+    right: 50px;
+    bottom: 50px;
+    width: 400px;
+  }
+    .legend .country {
+      display: block;
+      float: left;
+      width: 50px;
+      box-sizing: border-box;
+      cursor: pointer;
+      font-size: 11px;
+      padding: 3px 5px;
+      color: #999;
+      font-weight: bold;
+    }
+    .legend .country:hover {
+      background: #ccc;
+      color: black;
+    }
+
+.title {
+  position: absolute;
+  top: 30px;
+  left: 0;
+  width: 850px;
+  text-align: center;
+  font-size: 20px;
+}
+
+header {
+  display: block;
+  background: #f4c300;
+  border-bottom: 1px solid #bf9900;
+  text-shadow: 0px 1px 0px rgba(0, 0, 0, 0.45);
+  color: white;
+  padding: 16px;
+  text-align: center;
+  top: 0;
+  left: 0;
+  right: 0;
+}
+  header h1 {
+    font-size: 18px;
+    margin: 0 0 0.5em 0;
+  }
+  header h2 {
+    font-size: 16px;
+    margin: 0;
+  }
+
+footer {
+  display: block;
+  background: #009f3d;
+  border-top: 1px solid #006627;
+  color: white;
+  font-size: 14px;
+  padding: 16px;
+  text-align: center;
+  top: 0;
+  left: 0;
+  right: 0;
+}
+footer a {
+  color: white;
+}
+
+#main {
+  display: block;
+  position: relative;
+}
+
+.hosts {
+  position: absolute;
+  margin-left: 5px;
+  left: 50px;
+  bottom: 100px;
+  right: 50px;
+  font-size: 12px;
+}
+  .host {
+    display: block;
+    position: absolute;
+    -webkit-transform-origin: 0 0;
+    -webkit-transform: rotateZ(45deg);
+  }
