@@ -21,11 +21,19 @@ a {
 }
 .line path.gdp {
   stroke: blue;
-  fill: rgba(0, 0, 255, 0.25);
+  fill: rgba(0, 0, 255, 0.1);
 }
 .line path.medals {
   stroke: red;
-  fill: rgba(255, 0, 0, 0.25);
+  fill: rgba(255, 0, 0, 0.1);
+}
+.line.held path.gdp {
+  stroke: rgba(204, 163, 0, 1);
+  fill: rgba(244, 195, 0, 0.1);
+}
+.line.held path.medals {
+  stroke: hsla(143, 100%, 32%, 1);
+  fill: hsla(143, 100%, 62%, 0.1);
 }
 .axis {}
   .axis .domain {
@@ -93,9 +101,13 @@ a {
       color: #999;
       font-weight: bold;
     }
-    .legend .country:hover {
+    .legend .country:hover,
+    .legend .country.held {
       background: #ccc;
       color: black;
+    }
+    .legend .country.held {
+      background: #f4c300;
     }
 
 .title {

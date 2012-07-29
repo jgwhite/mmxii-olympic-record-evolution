@@ -158,13 +158,28 @@ d3.json('data.json', function(dataset) {
       .data(nest)
     .enter()
     .append('div')
-      .attr('class', 'country')
+      .attr('class', function(d) { return ['country', d.key].join(' ') })
       .attr('title', function(d) { return d.country_name })
       .text(function(d) { return d.key })
       .on('mouseover', function(d) {
-        d3.selectAll('.line').style('visibility', 'hidden')
-        d3.selectAll('.line.' + d.key).style('visibility', 'visible')
+        d3.select('.line.' + d.key).style('visibility', 'visible')
         d3.select('#title').text(d.country_name)
+      })
+      .on('mouseout', function(d) {
+        d3.select('.line.' + d.key + ':not(.held)').style('visibility', 'hidden')
+        d3.select('#title').text('')
+      })
+      .on('click', function(d) {
+        var country = d3.select('.country.' + d.key)
+        var line = d3.select('.line.' + d.key)
+
+        if (country.classed('held')) {
+          country.classed('held', false)
+          line.classed('held', false)
+        } else {
+          country.classed('held', true)
+          line.classed('held', true)
+        }
       })
 
   container.append('h1')
