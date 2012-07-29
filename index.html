@@ -12,6 +12,9 @@
 
   #graph {
     position: relative;
+    width: 850px;
+    height: 760px;
+    left: 50px;
   }
 
   .line {
@@ -29,19 +32,50 @@
   .axis {}
     .axis .domain {
       fill: none;
-      stroke: black;
       stroke-width: 1;
       shape-rendering: crispEdges;
+      stroke: black;
     }
     .axis .tick {
       fill: none;
-      stroke: black;
       stroke-width: 1;
       shape-rendering: crispEdges;
+      stroke: black;
     }
     .axis text {
       font-size: 12px;
     }
+
+    .axis.gdp text {
+      fill: blue;
+    }
+    .axis.gdp .domain,
+    .axis.gdp .tick {
+      stroke: blue;
+    }
+    .axis.medals text {
+      fill: red;
+    }
+    .axis.medals .domain,
+    .axis.medals .tick {
+      stroke: red;
+    }
+
+  .axis-label {
+    position: absolute;
+    top: 50%;
+    font-size: 15px;
+  }
+  .axis-label.gdp {
+    -webkit-transform: rotateZ(-90deg);
+    left: -100px;
+    color: blue;
+  }
+  .axis-label.medals {
+    -webkit-transform: rotateZ(90deg);
+    right: -30px;
+    color: red;
+  }
 
     .legend {
       position: fixed;
@@ -82,7 +116,7 @@
 window.mmxii = {};
 
 d3.json('data.json', function(dataset) {
-  var fullWidth = 900,
+  var fullWidth = 850,
       fullHeight = 760,
       padding = 50,
       width = fullWidth - (padding * 2),
@@ -125,20 +159,20 @@ d3.json('data.json', function(dataset) {
 
   var gdpScale = d3.scale.linear()
       .domain(gdpExtent)
-      .range([0, height])
+      .range([height, 0])
 
   var medalScale = d3.scale.linear()
       .domain(medalExtent)
-      .range([0, height])
+      .range([height, 0])
 
   var gdpLine = d3.svg.area()
       .x(function(d) { return xScale(d.year) })
-      .y0(function(d) { return height - gdpScale(d.gdp_per_capita) })
+      .y0(function(d) { return gdpScale(d.gdp_per_capita) })
       .y1(function(d) { return height })
 
   var medalLine = d3.svg.area()
       .x(function(d) { return xScale(d.year) })
-      .y0(function(d) { return height - medalScale(d.total_medals) })
+      .y0(function(d) { return medalScale(d.total_medals) })
       .y1(function(d) { return height })
 
   var xAxis = d3.svg.axis()
@@ -147,10 +181,14 @@ d3.json('data.json', function(dataset) {
       .ticks(d3.time.years, 4)
       .tickSize(6, 3, 0)
 
-  graph.append('g')
-      .attr('class', 'axis x')
-      .attr('transform', 'translate(0,' + height + ')')
-      .call(xAxis)
+  var gdpAxis = d3.svg.axis()
+      .scale(gdpScale)
+      .orient('left')
+      .tickFormat(function(d) { return (d / 1000) + 'K' })
+
+  var medalAxis = d3.svg.axis()
+      .scale(medalScale)
+      .orient('right')
 
   var lines = graph.selectAll('.line')
       .data(nest)
@@ -166,6 +204,29 @@ d3.json('data.json', function(dataset) {
   lines.append('path')
       .attr('class', 'medals')
       .attr('d', function(d) { return medalLine(d.values) })
+
+  graph.append('g')
+      .attr('class', 'axis x')
+      .attr('transform', 'translate(0,' + height + ')')
+      .call(xAxis)
+
+  graph.append('g')
+      .attr('class', 'axis gdp')
+      .attr('transform', 'translate(0, 0)')
+      .call(gdpAxis)
+
+  container.append('h3')
+      .attr('class', 'axis-label gdp')
+      .text('GDP Per Capita (USD)')
+
+  graph.append('g')
+      .attr('class', 'axis medals')
+      .attr('transform', 'translate(' + width + ', 0)')
+      .call(medalAxis)
+
+  container.append('h3')
+      .attr('class', 'axis-label medals')
+      .text('Medals')
 
   container.append('div')
       .attr('class', 'legend')
