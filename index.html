@@ -153,9 +153,22 @@
     display: block;
     position: relative;
   }
+
+  .hosts {
+    position: absolute;
+    margin-left: 5px;
+    left: 50px;
+    bottom: 100px;
+    right: 50px;
+    font-size: 12px;
+  }
+    .host {
+      display: block;
+      position: absolute;
+      -webkit-transform-origin: 0 0;
+      -webkit-transform: rotateZ(45deg);
+    }
 </style>
-</head>
-<body>
 
 <header>
   <h1>Olympic Records Evolution</h1>
@@ -179,6 +192,23 @@ d3.json('data.json', function(dataset) {
       padding = 50,
       width = fullWidth - (padding * 2),
       height = fullHeight - (padding * 2)
+
+  hosts = [
+   [ 1960, 'Rome' ],
+   [ 1964, 'Tokyo' ],
+   [ 1968, 'Mexico City' ],
+   [ 1972, 'Munich' ],
+   [ 1976, 'Montreal' ],
+   [ 1980, 'Moscow' ],
+   [ 1984, 'Los Angeles' ],
+   [ 1988, 'Seoul' ],
+   [ 1992, 'Barcelona' ],
+   [ 1996, 'Atlanta' ],
+   [ 2000, 'Sydney' ],
+   [ 2004, 'Athens' ],
+   [ 2008, 'Beijing' ]
+  ]
+
 
   dataset.forEach(function(d) {
     d.year = new Date(d.year, 0, 1)
@@ -304,6 +334,18 @@ d3.json('data.json', function(dataset) {
   container.append('h1')
       .attr('class', 'title')
       .attr('id', 'title')
+
+  container.append('div')
+      .attr('class', 'hosts')
+    .selectAll('.host')
+      .data(hosts)
+    .enter()
+    .append('span')
+      .attr('class', 'host')
+      .style('left', function(d) { return xScale(new Date(+d[0], 0, 1)) + 'px' })
+      .text(function(d) { return d[1] })
+
+
 
 })
 
