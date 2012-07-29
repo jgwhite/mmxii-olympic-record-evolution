@@ -1,13 +1,15 @@
 <!doctype html>
 <html>
 <head>
-  <title>Olympic Record Evolution</title>
+  <title>Olympic Records Evolution</title>
 </head>
 <body>
 
 <style>
   body {
     font-family: Helvetica, Arials, sans-serif;
+    margin: 0;
+    min-width: 1400px;
   }
 
   #graph {
@@ -15,6 +17,10 @@
     width: 850px;
     height: 760px;
     left: 50px;
+  }
+
+  a {
+    color: blue;
   }
 
   .line {
@@ -63,7 +69,7 @@
 
   .axis-label {
     position: absolute;
-    top: 50%;
+    top: 42%;
     font-size: 15px;
   }
   .axis-label.gdp {
@@ -78,7 +84,7 @@
   }
 
     .legend {
-      position: fixed;
+      position: absolute;
       top: 50px;
       right: 50px;
       bottom: 50px;
@@ -92,22 +98,74 @@
         cursor: pointer;
         font-size: 11px;
         padding: 3px 5px;
+        color: #999;
+        font-weight: bold;
       }
       .legend .country:hover {
         background: #ccc;
-        color: white;
+        color: black;
       }
 
   .title {
     position: absolute;
+    top: 30px;
+    left: 0;
+    width: 850px;
+    text-align: center;
+    font-size: 20px;
+  }
+
+  header {
+    display: block;
+    background: #aaa;
+    border-bottom: 1px solid #888;
+    text-shadow: 0px 1px 0px rgba(0, 0, 0, 0.5);
+    color: white;
+    padding: 16px;
+    text-align: center;
     top: 0;
     left: 0;
-    width: 900px;
+    right: 0;
+  }
+    header h1 {
+      font-size: 18px;
+      margin: 0 0 0.5em 0;
+    }
+    header h2 {
+      font-size: 16px;
+      margin: 0;
+    }
+
+  footer {
+    display: block;
+    background: #aaa;
+    border-top: 1px solid #888;
+    color: white;
+    font-size: 14px;
+    padding: 16px;
     text-align: center;
+    top: 0;
+    left: 0;
+    right: 0;
+  }
+
+  #main {
+    display: block;
+    position: relative;
   }
 </style>
+</head>
+<body>
 
-<div id="graph"></div>
+<header>
+  <h1>Olympic Records Evolution</h1>
+  <h2>Olympic Medal Count vs. GDP Per Capita, by Year</h2>
+</header>
+
+<div id="main" role="main">
+  <div id="graph"></div>
+  <div id="legend"></div>
+</div>
 
 <script src="d3.v2.min.js"></script>
 
@@ -117,7 +175,7 @@ window.mmxii = {};
 
 d3.json('data.json', function(dataset) {
   var fullWidth = 850,
-      fullHeight = 760,
+      fullHeight = 680,
       padding = 50,
       width = fullWidth - (padding * 2),
       height = fullHeight - (padding * 2)
@@ -228,7 +286,7 @@ d3.json('data.json', function(dataset) {
       .attr('class', 'axis-label medals')
       .text('Medals')
 
-  container.append('div')
+  d3.select('#legend')
       .attr('class', 'legend')
     .selectAll('.country')
       .data(nest)
@@ -247,10 +305,17 @@ d3.json('data.json', function(dataset) {
       .attr('class', 'title')
       .attr('id', 'title')
 
-
 })
 
 </script>
+
+<footer>
+  <p>Olympic data obtained from <a href="http://www.databaseolympics.com">databaseolympics.com</a> 28 July 2012.</p>
+  <p>GDP data obtained from <a href="http://worldbank.org">worldbank.org</a> 28 July 2012.</p>
+  <p>Dates are from 1960 onwards due to GDP data availability.</p>
+  <p>During the time period, some countries have broken up, or re-united. Expect to see holes in the data because of this.</p>
+  <p>Metrics that could be included in future: number of athletes participating per country, overall GDP, rate of GDP growth etc.</p>
+</footer>
 
 </body>
 </html>
